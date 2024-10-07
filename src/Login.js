@@ -74,7 +74,7 @@ const Login = ({ setToken }) => {
     setLoading(true);  // Start loading animation when the request starts
 
     // Make the login request to the backend
-    axios.post('http://localhost:5000/login', { email, password })
+    axios.post('http://localhost:5001/login', { email, password })
       .then(response => {
         const token = response.data.token;
         // Store the token in localStorage

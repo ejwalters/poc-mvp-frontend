@@ -1,29 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Button } from '@mui/material';
-import POCDetail from './POCDetail'; // Import the PoCDetail component
+import { useSearchParams, useNavigate } from 'react-router-dom'; // Use useNavigate
 
 const POCTable = ({ pocs, token, onBackToDashboard }) => {
-  const [selectedPoC, setSelectedPoC] = useState(null);  // State to track selected PoC for detail view
+  const [filteredPoCs, setFilteredPoCs] = useState([]);
+  const [searchParams] = useSearchParams(); // Access query params
+  const navigate = useNavigate(); // Use for navigation
 
-  // Handle clicking on a specific PoC
+  useEffect(() => {
+    // Extract status from query parameters
+    const status = searchParams.get('status');
+
+    // Filter based on status query parameter
+    if (status) {
+      const filtered = pocs.filter((poc) => poc.status === status);
+      setFilteredPoCs(filtered);
+    } else {
+      // If no status is present, show all PoCs
+      setFilteredPoCs(pocs);
+    }
+  }, [pocs, searchParams]);
+
   const handleRowClick = (poc) => {
-    setSelectedPoC(poc);
+    // Navigate to PoC detail page
+    navigate(`/pocs/${poc.id}`);
   };
-
-  // Handle returning to the table from PoC detail view
-  const handleBackToTable = () => {
-    setSelectedPoC(null);
-  };
-
-  if (selectedPoC) {
-    // Render the PoCDetail component if a PoC is selected
-    return <POCDetail poc={selectedPoC} token={token} onBackToTable={handleBackToTable} />;
-  }
 
   return (
     <div>
       <Typography variant="h2" gutterBottom>
-        All PoCs
+        {searchParams.get('status') ? `${searchParams.get('status')} PoCs` : 'All PoCs'}
       </Typography>
       <Button variant="contained" color="primary" onClick={onBackToDashboard}>
         Back to Dashboard
@@ -41,8 +47,13 @@ const POCTable = ({ pocs, token, onBackToDashboard }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {pocs.map((poc) => (
-              <TableRow key={poc.id} hover onClick={() => handleRowClick(poc)} style={{ cursor: 'pointer' }}>
+            {filteredPoCs.map((poc) => (
+              <TableRow 
+                key={poc.id} 
+                hover 
+                style={{ cursor: 'pointer' }} 
+                onClick={() => handleRowClick(poc)} // Trigger row click navigation
+              >
                 <TableCell>{poc.poc_name}</TableCell>
                 <TableCell>{poc.customer_name}</TableCell>
                 <TableCell>{poc.status}</TableCell>

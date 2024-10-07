@@ -18,7 +18,7 @@ const POCDetail = ({ poc, onBackToTable, token }) => {
 
   useEffect(() => {
     // Fetch customer contacts
-    axios.get(`http://localhost:5000/pocs/${poc.id}/contacts`, {
+    axios.get(`http://localhost:5001/pocs/${poc.id}/contacts`, {
       headers: {
         Authorization: `Bearer ${token}`,
       }
@@ -31,7 +31,7 @@ const POCDetail = ({ poc, onBackToTable, token }) => {
     });
 
     // Fetch required capabilities
-    axios.get(`http://localhost:5000/pocs/${poc.id}/capabilities`, {
+    axios.get(`http://localhost:5001/pocs/${poc.id}/capabilities`, {
       headers: {
         Authorization: `Bearer ${token}`,
       }
@@ -44,7 +44,7 @@ const POCDetail = ({ poc, onBackToTable, token }) => {
     });
 
     // Fetch use cases
-    axios.get(`http://localhost:5000/pocs/${poc.id}/use_cases`, {
+    axios.get(`http://localhost:5001/pocs/${poc.id}/use_cases`, {
       headers: {
         Authorization: `Bearer ${token}`,
       }
@@ -57,7 +57,7 @@ const POCDetail = ({ poc, onBackToTable, token }) => {
     });
 
     // Fetch success criteria
-    axios.get(`http://localhost:5000/pocs/${poc.id}/success_criteria`, {
+    axios.get(`http://localhost:5001/pocs/${poc.id}/success_criteria`, {
       headers: {
         Authorization: `Bearer ${token}`,
       }
@@ -108,7 +108,7 @@ const POCDetail = ({ poc, onBackToTable, token }) => {
       return;
     }
 
-    axios.post(`http://localhost:5000/pocs/${poc.id}/contacts`, newContact, {
+    axios.post(`http://localhost:5001/pocs/${poc.id}/contacts`, newContact, {
       headers: {
         Authorization: `Bearer ${token}`,
       }
@@ -129,7 +129,7 @@ const POCDetail = ({ poc, onBackToTable, token }) => {
       return;
     }
 
-    axios.post(`http://localhost:5000/pocs/${poc.id}/capabilities`, { capability_description: newCapability }, {
+    axios.post(`http://localhost:5001/pocs/${poc.id}/capabilities`, { capability_description: newCapability }, {
       headers: {
         Authorization: `Bearer ${token}`,
       }
@@ -151,7 +151,7 @@ const POCDetail = ({ poc, onBackToTable, token }) => {
       return;
     }
 
-    axios.post(`http://localhost:5000/pocs/${poc.id}/use_cases`, { use_case_description: newUseCase }, {
+    axios.post(`http://localhost:5001/pocs/${poc.id}/use_cases`, { use_case_description: newUseCase }, {
       headers: {
         Authorization: `Bearer ${token}`,
       }
@@ -173,7 +173,7 @@ const POCDetail = ({ poc, onBackToTable, token }) => {
       return;
     }
 
-    axios.post(`http://localhost:5000/pocs/${poc.id}/success_criteria`, { criteria_description: newSuccessCriteria }, {
+    axios.post(`http://localhost:5001/pocs/${poc.id}/success_criteria`, { criteria_description: newSuccessCriteria }, {
       headers: {
         Authorization: `Bearer ${token}`,
       }

@@ -6,7 +6,7 @@ const Dashboard = ({ token, access }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/dashboard', {
+    axios.get('http://localhost:5001/dashboard', {
       headers: {
         Authorization: `Bearer ${token}`
       }
