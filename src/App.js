@@ -8,6 +8,7 @@ import Login from './Login';
 import SalesEngineerDashboard from './components/SalesEngineerDashboard';
 import POCTable from './components/POCTable';
 import POCDetail from './components/POCDetail';
+import Deals from './components/Deals'; // Import the Deals component
 import { Home, BarChart, Notifications, Settings, Support, Search, Logout } from '@mui/icons-material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -179,6 +180,12 @@ const AppContent = ({ token, access, pocs, setToken, setAccess, loading, toggleD
             {open && <ListItemText primary="My POCs" sx={{ color: '#fff' }} />}
           </ListItem>
 
+          {/* Add the Deals section to the sidebar */}
+          <ListItem button component={Link} to="/deals">
+            <ListItemIcon><BarChart sx={{ color: '#fff' }} /></ListItemIcon>
+            {open && <ListItemText primary="Deals" sx={{ color: '#fff' }} />}
+          </ListItem>
+
           <ListItem button component={Link} to="#">
             <ListItemIcon><Notifications sx={{ color: '#fff' }} /></ListItemIcon>
             {open && (
@@ -268,6 +275,9 @@ const AppContent = ({ token, access, pocs, setToken, setAccess, loading, toggleD
 
           {/* PoC list route */}
           <Route path="/pocs" element={<POCTable pocs={pocs} token={token} />} />
+
+          {/* Add the Deals route */}
+          <Route path="/deals" element={<Deals token={token} access={access} />} />
 
           {/* PoC detail route */}
           <Route path="/pocs/:id" element={<PoCDetailWrapper />} />
