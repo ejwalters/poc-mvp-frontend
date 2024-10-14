@@ -9,6 +9,7 @@ import SalesEngineerDashboard from './components/SalesEngineerDashboard';
 import POCTable from './components/POCTable';
 import POCDetail from './components/POCDetail';
 import Deals from './components/Deals'; // Import the Deals component
+import DealDetail from './components/DealDetail'; // Import DealDetail component
 import { Home, BarChart, Notifications, Settings, Support, Search, Logout } from '@mui/icons-material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
@@ -20,6 +21,7 @@ const App = () => {
   const [access, setAccess] = useState('');
   const [open, setOpen] = useState(true);
   const [pocs, setPocs] = useState([]);
+  const [deals, setDeals] = useState([]); // Add state for deals
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,6 +43,21 @@ const App = () => {
           console.error('Error fetching PoCs:', error);
           setLoading(false);
         });
+
+      // Fetch Deals
+      axios.get('http://localhost:5001/deals', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((response) => {
+          setDeals(response.data);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.error('Error fetching Deals:', error);
+          setLoading(false);
+        });
     }
   }, [token]);
 
@@ -60,6 +77,7 @@ const App = () => {
           token={token}
           access={access}
           pocs={pocs}
+          deals={deals} // Pass deals state
           setToken={setToken}
           setAccess={setAccess}
           loading={loading}
@@ -71,7 +89,7 @@ const App = () => {
   );
 };
 
-const AppContent = ({ token, access, pocs, setToken, setAccess, loading, toggleDrawer, open }) => {
+const AppContent = ({ token, access, pocs, deals, setToken, setAccess, loading, toggleDrawer, open }) => {
   const navigate = useNavigate(); // Move useNavigate here
 
   const handleLogout = () => {
@@ -81,6 +99,7 @@ const AppContent = ({ token, access, pocs, setToken, setAccess, loading, toggleD
     navigate('/'); // Redirect to login route
   };
 
+  // Wrapper for PoCDetail
   const PoCDetailWrapper = () => {
     const { id } = useParams(); // Get PoC ID from route
     const selectedPoC = pocs.find(poc => poc.id === parseInt(id));
@@ -90,6 +109,18 @@ const AppContent = ({ token, access, pocs, setToken, setAccess, loading, toggleD
     }
 
     return <POCDetail poc={selectedPoC} token={token} />;
+  };
+
+  // Wrapper for DealDetail (similar to PoCDetail)
+  const DealDetailWrapper = () => {
+    const { id } = useParams(); // Get Deal ID from route
+    const selectedDeal = deals.find(deal => deal.id === parseInt(id));
+
+    if (!selectedDeal) {
+      return <Typography variant="h6">Deal not found.</Typography>;
+    }
+
+    return <DealDetail deal={selectedDeal} token={token} />;
   };
 
   return (
@@ -165,7 +196,6 @@ const AppContent = ({ token, access, pocs, setToken, setAccess, loading, toggleD
             />
           )}
         </Box>
-
 
         <Divider />
 
@@ -276,11 +306,14 @@ const AppContent = ({ token, access, pocs, setToken, setAccess, loading, toggleD
           {/* PoC list route */}
           <Route path="/pocs" element={<POCTable pocs={pocs} token={token} />} />
 
-          {/* Add the Deals route */}
-          <Route path="/deals" element={<Deals token={token} access={access} />} />
+          {/* Deals list route */}
+          <Route path="/deals" element={<Deals token={token} access={access} deals={deals} />} />
 
           {/* PoC detail route */}
           <Route path="/pocs/:id" element={<PoCDetailWrapper />} />
+
+          {/* Deal detail route */}
+          <Route path="/deals/:id" element={<DealDetailWrapper />} />
         </Routes>
       </Box>
     </Box>
