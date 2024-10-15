@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Table, TableHead, TableRow, TableCell, TableBody, Button, CircularProgress, Drawer, Box, Divider, TextField } from '@mui/material';
+import { Typography, Table, TableHead, TableRow, TableCell, TableBody, Button, CircularProgress, Drawer, Box, TextField } from '@mui/material';
 import { useParams } from 'react-router-dom';
-import ReactQuill from 'react-quill'; // Import Quill editor
-import 'react-quill/dist/quill.snow.css'; // Import Quill styles
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import axios from 'axios';
+import DealDetailHeader from './DealDetailHeader'; // Import the header component
+import DealStakeholders from './DealStakeholders'; // Import the new component
 
-// Sidebar (Drawer) width
+
 const drawerWidth = 400;
 
 const DealDetail = ({ token, deal }) => {
@@ -16,12 +18,13 @@ const DealDetail = ({ token, deal }) => {
     const [notes, setNotes] = useState([]); // State to store notes
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [currentStatus, setCurrentStatus] = useState(''); // State to store current status
     const [drawerOpen, setDrawerOpen] = useState(false); // State to control the sidebar
     const [editorContent, setEditorContent] = useState(''); // State to store Quill content
     const [noteTitle, setNoteTitle] = useState(''); // State to store note title
     const [editingNote, setEditingNote] = useState(null); // Track if editing an existing note
 
-    // Fetch the milestones and notes for the deal
+    // Fetch the milestones, notes, and current status for the deal
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -36,6 +39,12 @@ const DealDetail = ({ token, deal }) => {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setNotes(notesResponse.data);
+
+                // Fetch current deal status
+                const statusResponse = await axios.get(`http://localhost:5001/deals/${id}/status`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setCurrentStatus(statusResponse.data.current_stage);
 
                 setLoading(false);
             } catch (err) {
@@ -117,14 +126,12 @@ const DealDetail = ({ token, deal }) => {
     }
 
     return (
-        <div>
-            <Typography variant="h4" gutterBottom>Deal Details</Typography>
-            <Typography variant="h6">Deal Name: {selectedDeal.deal_name}</Typography>
-            <Typography variant="h6">Client Name: {selectedDeal.client_name}</Typography>
-            <Typography variant="h6">Amount: ${selectedDeal.amount}</Typography>
-            <Typography variant="h6">Status: {selectedDeal.status}</Typography>
-            <Typography variant="h6">Start Date: {new Date(selectedDeal.start_date).toLocaleDateString()}</Typography>
-            <Typography variant="h6">End Date: {new Date(selectedDeal.end_date).toLocaleDateString()}</Typography>
+        <div style={{ paddingTop: 0 }}>
+            {/* Use the DealDetailHeader to display deal details */}
+            <DealDetailHeader deal={selectedDeal} currentStatus={currentStatus} />
+
+            {/* Deal Stakeholders */}
+            <DealStakeholders dealId={id} token={token} /> {/* Add the stakeholders component */}
 
             {/* Milestones Table */}
             <Typography variant="h5" style={{ marginTop: '20px' }}>Milestones</Typography>
@@ -163,7 +170,7 @@ const DealDetail = ({ token, deal }) => {
                 <TableHead>
                     <TableRow>
                         <TableCell>Note ID</TableCell>
-                        <TableCell>Title</TableCell> {/* Display Title instead of content */}
+                        <TableCell>Title</TableCell>
                         <TableCell>Created At</TableCell>
                     </TableRow>
                 </TableHead>
@@ -171,7 +178,7 @@ const DealDetail = ({ token, deal }) => {
                     {notes.map((note) => (
                         <TableRow key={note.id} hover onClick={() => handleOpenDrawer(note)} style={{ cursor: 'pointer' }}>
                             <TableCell>{note.id}</TableCell>
-                            <TableCell>{note.title || 'Untitled Note'}</TableCell> {/* Show default if no title */}
+                            <TableCell>{note.title || 'Untitled Note'}</TableCell>
                             <TableCell>{new Date(note.created_at).toLocaleDateString()}</TableCell>
                         </TableRow>
                     ))}
